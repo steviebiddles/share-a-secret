@@ -1,0 +1,58 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+hostname = "passwordpusher.dev"
+
+server_ip       = "192.168.22.10"
+server_cpus     = "1"   # Cores
+server_memory   = "512" # MB
+
+Vagrant.configure(2) do |config|
+    config.vm.box = "ubuntu/trusty64"
+
+    if Vagrant.has_plugin?("vagrant-hostmanager")
+        config.hostmanager.enabled = true
+        config.hostmanager.manage_host = true
+        config.hostmanager.ignore_private_ip = false
+        config.hostmanager.include_offline = false
+    end
+
+    config.vm.hostname = hostname
+
+    # Create a static IP
+    if Vagrant.has_plugin?("vagrant-auto_network")
+        config.vm.network :private_network, :ip => "0.0.0.0", :auto_network => true
+    else
+        config.vm.network :private_network, ip: server_ip
+        config.vm.network :forwarded_port, guest: 80, host: 8000
+    end
+
+    # Enable agent forwarding over SSH connections
+    config.ssh.forward_agent = true
+
+    # Use NFS for the shared folder
+    config.vm.synced_folder ".", "/vagrant",
+        id: "core",
+        :nfs => true,
+        :mount_options => ['nolock,vers=3,udp,noatime,actimeo=2,fsc']
+
+    # Using VirtualBox
+    config.vm.provider :virtualbox do |vb|
+        vb.name = hostname
+
+        # Set server cpus and memory
+        # Prevent VMs running on Ubuntu to lose internet connection
+        vb.customize [
+            "modifyvm", :id,
+            "--cpus", server_cpus,
+            "--memory", server_memory,
+            "--natdnshostresolver1", "on",
+            "--natdnsproxy1", "on"
+        ]
+
+        # Set the timesync threshold to 10 seconds, instead of the default 20 minutes.
+        # If the clock gets more than 15 minutes out of sync (due to your laptop going
+        # to sleep for instance, then some 3rd party services will reject requests.
+        vb.customize ["guestproperty", "set", :id, "/VirtualBox/GuestAdd/VBoxService/--timesync-set-threshold", 10000]
+    end
+end
