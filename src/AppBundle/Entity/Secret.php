@@ -10,6 +10,7 @@ use VMelnik\DoctrineEncryptBundle\Configuration\Encrypted;
  *
  * @ORM\Table(name="secret")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\SecretRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Secret
 {
@@ -176,5 +177,26 @@ class Secret
     public function setUpdated($updated)
     {
         $this->updated = $updated;
+    }
+
+    /**
+     * Set created and updated at date time.
+     *
+     * @ORM\PrePersist
+     */
+    public function prePersist()
+    {
+        $this->setCreated(new \DateTime());
+        $this->setUpdated(new \DateTime());
+    }
+
+    /**
+     * Set updated at date time.
+     *
+     * @ORM\PreUpdate()
+     */
+    public function preUpdate()
+    {
+        $this->setUpdated(new \DateTime());
     }
 }

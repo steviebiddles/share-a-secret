@@ -36,3 +36,7 @@ doctrine:
 
 swiftmailer:
     host: 10.0.2.2:1025
+
+hautelook_alice:
+    locale: en_GB
+    seed: 1

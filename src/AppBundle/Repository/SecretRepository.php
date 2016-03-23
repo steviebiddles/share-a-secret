@@ -2,6 +2,7 @@
 
 namespace AppBundle\Repository;
 
+use AppBundle\Entity\Secret;
 use Doctrine\ORM\EntityRepository;
 
 /**
@@ -12,4 +13,20 @@ use Doctrine\ORM\EntityRepository;
  */
 class SecretRepository extends EntityRepository
 {
+    /**
+     * @param Secret $secret
+     */
+    public function save(Secret $secret)
+    {
+        $this->getEntityManager()->persist($secret);
+        $this->getEntityManager()->flush();
+    }
+
+    /**
+     * @return \Doctrine\ORM\EntityManager
+     */
+    public function getEntityManager()
+    {
+        return $this->_em;
+    }
 }
