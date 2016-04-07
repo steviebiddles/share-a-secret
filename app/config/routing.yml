@@ -1,3 +1,45 @@
 app:
-    resource: AppBundle\Controller\SecretController
-    type: rest
+    resource: "@AppBundle/Controller"
+    type: annotation
+
+new_secret:
+    path:  /s/new.{_format}
+    methods: GET
+    defaults: { _controller: AppBundle:Secret:new, _format: html }
+
+remove_secret:
+    path:  /s/{id}/remove.{_format}
+    methods: GET
+    defaults: { _controller: AppBundle:Secret:remove, _format: html }
+
+get_secrets:
+    path:  /s.{_format}
+    methods: GET
+    defaults: { _controller: AppBundle:Secret:cget, _format: html }
+
+get_secret:
+    path:  /s/{id}.{_format}
+    methods: GET
+    defaults: { _controller: AppBundle:Secret:get, _format: html }
+
+post_secret:
+    path:  /s.{_format}
+    methods: POST
+    defaults: { _controller: AppBundle:Secret:post, _format: html }
+
+delete_secret:
+    path:  /s/{id}.{_format}
+    methods: DELETE
+    defaults: { _controller: AppBundle:Secret:delete, _format: html }
+
+NelmioApiDocBundle:
+    resource: "@NelmioApiDocBundle/Resources/config/routing.yml"
+    prefix:   /api/doc
+
+# redirect to secrets
+root:
+    path: /
+    defaults:
+        _controller: FrameworkBundle:Redirect:redirect
+        route: get_secrets
+        permanent: true
