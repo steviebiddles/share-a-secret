@@ -1,0 +1,49 @@
+html {
+  position: relative;
+  min-height: 100%;
+
+  body {
+    /* Margin bottom by footer height */
+    margin-bottom: 5.25em;
+
+    h1 {
+      margin: 0 0 .5em 0;
+      padding: 0;
+    }
+    ol {
+      margin: 0;
+      padding: 0 0 0 16px;
+    }
+    .enjoy {
+      margin-top: 1em;
+    }
+    header#site-header {
+      margin-bottom: 5em;
+    }
+    footer#site-footer {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      /* Set the fixed height of the footer here */
+      padding-top: 1.25em;
+      height: 4em;
+      background: #222222;
+      color: #ffffff;
+    }
+
+    form#share-secret {
+      div.error {
+        background: $state-danger-bg;
+        color: $state-danger-text;
+        padding: 5px 10px 6px 10px;
+
+        ul {
+          list-style: none;
+          margin: 0;
+          padding: 0;
+        }
+      }
+    }
+
+  }
+}

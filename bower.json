@@ -1,0 +1,7 @@
+{
+  "name": "secret.octaldynamics.com",
+  "dependencies": {
+    "bootstrap-sass": "~3.3.4",
+    "compass-mixins": "v0.12.*"
+  }
+}

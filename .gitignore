@@ -1,6 +1,9 @@
 .idea
 .vagrant
 
+node_modules
+bower_components
+
 # SQLite database
 *.db3
 

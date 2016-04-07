@@ -14,6 +14,24 @@ use Doctrine\ORM\EntityRepository;
 class SecretRepository extends EntityRepository
 {
     /**
+     * @param $id
+     * @return Secret|null
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function findActiveSecret($id)
+    {
+        $qb = $this->createQueryBuilder('s');
+
+        $qb->select('s')
+            ->where('s.id = :id')
+            ->setParameter('id', strtoupper($id))
+            ->andWhere('s.expires > CURRENT_TIMESTAMP()')
+            ->andWhere('s.views > 0');
+
+        return $qb->getQuery()->getOneOrNullResult();
+    }
+
+    /**
      * @param Secret $secret
      */
     public function save(Secret $secret)

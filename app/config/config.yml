@@ -77,7 +77,11 @@ doctrine_migrations:
     table_name: migration_versions
     name: Application Migrations
 
+nelmio_api_doc: ~
+
 fos_rest:
+    exception:
+        enabled: true
     routing_loader:
         default_format: html
     param_fetcher_listener: true
@@ -85,14 +89,15 @@ fos_rest:
     format_listener: true
     allowed_methods_listener: true
     disable_csrf_role: ROLE_API
-    unauthorized_challenge: "Basic realm='Restricted Area'"
     access_denied_listener:
         # all requests using the 'json' format will return a 403 on an access denied violation
         json: true
     view:
+        # view_response_listener: 'force'
         view_response_listener:
             enabled: false
-            force: false
+        force_redirects:
+            html: true
         formats:
             json: true
             rss: false
@@ -103,3 +108,9 @@ fos_rest:
             html: true
         failed_validation: HTTP_BAD_REQUEST
         default_engine: twig
+    exception:
+        codes:
+            'Symfony\Component\Routing\Exception\ResourceNotFoundException': 404
+            'Doctrine\ORM\OptimisticLockException': HTTP_CONFLICT
+        messages:
+            'Symfony\Component\Routing\Exception\ResourceNotFoundException': true

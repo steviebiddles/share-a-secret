@@ -7,7 +7,6 @@ services:
 
     app.secret.repository:
         class: AppBundle\Repository\SecretRepository
-        factory_service: doctrine.orm.default_entity_manager
-        factory_method: getRepository
+        factory:   ['@doctrine.orm.entity_manager', getRepository]
         arguments:
             - AppBundle\Entity\Secret

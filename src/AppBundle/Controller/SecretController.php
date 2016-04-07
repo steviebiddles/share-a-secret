@@ -3,49 +3,186 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Secret;
+use AppBundle\Form\Type\SecretType;
+
+use FOS\RestBundle\Util\Codes;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Routing\ClassResourceInterface;
-use Symfony\Component\HttpFoundation\Request;
+use FOS\RestBundle\Controller\Annotations;
+use FOS\RestBundle\View\RouteRedirectView;
 
+use Nelmio\ApiDocBundle\Annotation\ApiDoc;
+
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Generator\UrlGenerator;
+
+use Carbon\Carbon;
+
+/**
+ * Class SecretController
+ *
+ * @package AppBundle\Controller
+ */
 class SecretController extends FOSRestController implements ClassResourceInterface
 {
-    public function cgetAction(Request $request)
+    /**
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function cgetAction()
     {
-        if ($request->get('add')) {
-            $dateTime = new \DateTime();
+        return $this->render(':secrets:index.html.twig', array());
+    }
 
-            $secret = new Secret();
-            $secret
-                ->setSecret('stephen')
-                ->setViews(5)
-                ->setExpires($dateTime->add(new \DateInterval('P3D')));
+    /**
+     * Get a single secret and update view count.
+     *
+     * @ApiDoc(
+     *   output = "AppBundle\Entity\Secret",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     404 = "Returned when the secret is not found"
+     *   }
+     * )
+     *
+     * @param Request $request
+     * @param string $id the universally unique identifier
+     *
+     * @return array
+     */
+    public function getAction(Request $request, $id)
+    {
+        $newSecret = true;
+        $secret = $this->getRepository()->findActiveSecret($id);
+
+        if (null === $secret) {
+            throw $this->createNotFoundException('Secret does not exist.');
+        }
+
+        if ($request->headers->get('referer') !==
+            $this->generateUrl('new_secret', array(), UrlGenerator::ABSOLUTE_URL)
+        ) {
+            $newSecret = false;
+            $secret->setViews($secret->getViews() - 1);
 
             $this->getRepository()->save($secret);
         }
 
-        $data = $this->getRepository()->findAll();
-
-        $view = $this->view($data, 200)
-            ->setTemplate(':secrets:cget_action.html.twig')
-            ->setTemplateVar('secrets');
+        $view = $this->view($secret, Codes::HTTP_OK)
+            ->setTemplate(':secrets:get.html.twig')
+            ->setTemplateVar('secret')
+            ->setTemplateData(array(
+                'new_secret' => $newSecret,
+                'date_for_humans' => Carbon::createFromTimestamp($secret->getExpires()->format('U'))
+                    ->diffForHumans(null, true)
+            ));
 
         return $this->handleView($view);
     }
 
+    /**
+     * Presents the form to use to create a new secret.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   statusCodes = {
+     *     200 = "Returned when successful"
+     *   }
+     * )
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
     public function newAction()
     {
-    }
-
-    public function getAction($uuid)
-    {
-        // fae81dfb-b88b-41a5-bf95-46518791d341
-        $data = $this->getRepository()->find(strtoupper($uuid));
-
-        $view = $this->view($data, 200)
-            ->setTemplate(':secrets:get_action.html.twig')
-            ->setTemplateVar('secret');
+        $view = $this->view($this->createForm(SecretType::class, null, array(
+            'action' => $this->generateUrl('post_secret')
+        )), Codes::HTTP_OK)
+            ->setTemplate(':secrets:new.html.twig')
+            ->setTemplateVar('form');
 
         return $this->handleView($view);
+    }
+
+    /**
+     * Creates a new secret from the submitted data.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   input = "AppBundle\Form\Type\SecretType",
+     *   statusCodes = {
+     *     201 = "Returned when created",
+     *     400 = "Returned when the form has errors"
+     *   }
+     * )
+     *
+     * @param Request $request
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function postAction(Request $request)
+    {
+        $form = $this->createForm(SecretType::class, new Secret());
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            /** @var Secret $secret */
+            $secret = $form->getData();
+
+            $this->getRepository()->save($secret);
+
+            return $this->handleView(
+                $this->routeRedirectView('get_secret', array('id' => $secret->getId()))
+            );
+        }
+
+        $view = $this->view($form, Codes::HTTP_BAD_REQUEST)
+            ->setTemplate(':secrets:new.html.twig')
+            ->setTemplateVar('form');
+
+        return $this->handleView($view);
+    }
+
+    /**
+     * Removes a secret.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   statusCodes={
+     *     204="Returned when successful"
+     *   }
+     * )
+     *
+     * @param string $id the secret uuid
+     *
+     * @return RouteRedirectView
+     */
+    public function deleteAction($id)
+    {
+        $secret = $this->getRepository()->find(strtoupper($id));
+
+        $this->getRepository()->getEntityManager()->remove($secret);
+        $this->getRepository()->getEntityManager()->flush();
+
+        return $this->handleView($this->routeRedirectView('get_secrets', array(), Codes::HTTP_NO_CONTENT));
+    }
+
+    /**
+     * Removes a secret.
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   statusCodes={
+     *     204="Returned when successful"
+     *   }
+     * )
+     *
+     * @param string $id the secret uuid
+     *
+     * @return RouteRedirectView
+     */
+    public function removeAction($id)
+    {
+        return $this->deleteAction($id);
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 use VMelnik\DoctrineEncryptBundle\Configuration\Encrypted;
 
 /**
@@ -24,7 +25,11 @@ class Secret
     /**
      * @var string
      *
+     * @Assert\NotBlank()
+     * @Assert\Length(min = 1)
+     *
      * @Encrypted
+     *
      * @ORM\Column(name="secret", type="string", length=255)
      */
     private $secret;
@@ -32,12 +37,17 @@ class Secret
     /**
      * @var int
      *
+     * @Assert\NotBlank()
+     * @Assert\Range(min = 1, max = 5)
+     *
      * @ORM\Column(name="views", type="integer")
      */
     private $views;
 
     /**
      * @var \DateTime
+     *
+     * @Assert\NotBlank()
      *
      * @ORM\Column(name="expires", type="datetime")
      */
@@ -64,7 +74,7 @@ class Secret
      */
     public function getId()
     {
-        return $this->id;
+        return strtolower($this->id);
     }
 
     /**
