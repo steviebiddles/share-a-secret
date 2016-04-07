@@ -45,5 +45,28 @@ html {
       }
     }
 
+    #the-secret {
+      position: relative;
+
+      .copy-trigger {
+        position: absolute;
+        top: 0;
+        right: 0;
+        cursor: pointer;
+        font-size: .750em;
+        border-left: 1px solid #ccc;
+        border-bottom: 1px solid #ccc;
+        padding: 4px 8px 4px 8px;
+
+        &:hover {
+          background: $brand-primary;
+          color: #ffffff;
+        }
+
+        &.copied {
+          background: red;
+        }
+      }
+    }
   }
 }

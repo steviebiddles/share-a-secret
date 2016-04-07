@@ -56,6 +56,7 @@ gulp.task('scripts', function () {
     app.addScript([
         config.bowerDir + '/jquery/dist/jquery.js',
         config.bowerDir + '/bootstrap-sass/assets/javascripts/bootstrap.js',
+        config.bowerDir + '/clipboard/dist/clipboard.js',
         config.assetsDir + '/js/site.js'
     ], 'site.js');
 });
