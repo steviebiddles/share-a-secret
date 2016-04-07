@@ -163,7 +163,9 @@ class SecretController extends FOSRestController implements ClassResourceInterfa
         $this->getRepository()->getEntityManager()->remove($secret);
         $this->getRepository()->getEntityManager()->flush();
 
-        return $this->handleView($this->routeRedirectView('get_secrets', array(), Codes::HTTP_NO_CONTENT));
+        return $this->handleView(
+            $this->routeRedirectView('get_secrets', array('p' => 1), Codes::HTTP_NO_CONTENT)
+        );
     }
 
     /**
