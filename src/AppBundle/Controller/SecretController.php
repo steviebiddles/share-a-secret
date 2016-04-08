@@ -5,6 +5,7 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\Secret;
 use AppBundle\Form\Type\SecretType;
 
+use Carbon\CarbonInterval;
 use FOS\RestBundle\Util\Codes;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Routing\ClassResourceInterface;
@@ -67,13 +68,19 @@ class SecretController extends FOSRestController implements ClassResourceInterfa
             $this->getRepository()->save($secret);
         }
 
+        $date = Carbon::createFromFormat('Y-m-d H:i:s', $secret->getExpires()->format('Y-m-d H:i:s'));
+        $dateExtra = null;
+
+        if ($date->diffInDays() > 0) {
+            $dateExtra = ' ' . $date->diff(Carbon::now(), true)->format('%h hours');
+        }
+
         $view = $this->view($secret, Codes::HTTP_OK)
             ->setTemplate(':secrets:get.html.twig')
             ->setTemplateVar('secret')
             ->setTemplateData(array(
                 'new_secret' => $newSecret,
-                'date_for_humans' => Carbon::createFromTimestamp($secret->getExpires()->format('U'))
-                    ->diffForHumans(null, true)
+                'date_for_humans' => $date->diffForHumans(Carbon::now(), true) . $dateExtra
             ));
 
         return $this->handleView($view);
