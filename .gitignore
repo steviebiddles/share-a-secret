@@ -21,6 +21,8 @@ bower_components
 
 # Parameters
 /app/config/parameters.yml
+/app/config/parameters.yml.*
+!/app/config/parameters.yml.dist
 /app/config/parameters.ini
 
 # Managed by Composer
