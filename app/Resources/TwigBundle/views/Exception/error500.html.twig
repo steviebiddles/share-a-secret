@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+
+                <h1 class="text-danger">Error 500</h1>
+
+                <p class="lead">There was an internal server error.</p>
+                <p>Try loading this page again in some minutes or <a href="{{ path('get_secrets') }}">go back to the main page</a>.</p>
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
