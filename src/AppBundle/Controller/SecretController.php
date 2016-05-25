@@ -5,7 +5,6 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\Secret;
 use AppBundle\Form\Type\SecretType;
 
-use Carbon\CarbonInterval;
 use FOS\RestBundle\Util\Codes;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Routing\ClassResourceInterface;
