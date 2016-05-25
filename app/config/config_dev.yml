@@ -30,10 +30,6 @@ monolog:
         #    type:   chromephp
         #    level:  info
 
-doctrine:
-    dbal:
-        path: "%kernel.root_dir%/data/database_dev.db3"
-
 swiftmailer:
     host: 10.0.2.2:1025
 
