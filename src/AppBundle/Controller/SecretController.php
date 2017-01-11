@@ -8,7 +8,6 @@ use AppBundle\Form\Type\SecretType;
 use FOS\RestBundle\Util\Codes;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Routing\ClassResourceInterface;
-use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\View\RouteRedirectView;
 
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
