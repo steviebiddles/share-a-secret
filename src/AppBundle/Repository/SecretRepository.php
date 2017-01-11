@@ -32,6 +32,20 @@ class SecretRepository extends EntityRepository
     }
 
     /**
+     * @return array
+     */
+    public function removeInactiveSecrets()
+    {
+        $qb = $this->createQueryBuilder('s');
+
+        $qb->delete('AppBundle:Secret', 's')
+            ->where('s.expires <= :date')
+            ->setParameter(':date', new \DateTime());
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
      * @param Secret $secret
      */
     public function save(Secret $secret)
